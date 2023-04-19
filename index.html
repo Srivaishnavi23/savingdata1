@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Candy Store</title>
+	<link rel="stylesheet" type="text/css" href="style.css">
+</head>
+<body>
+	<h1>Candy Store</h1>
+	<table id="candyTable">
+		<thead>
+			<tr>
+				<th>Candy Name</th>
+				<th>Description</th>
+				<th>Price</th>
+				<th>Quantity</th>
+				<th></th>
+			</tr>
+		</thead>
+		<tbody>
+			<tr>
+				<td><input type="text" id="candyName"></td>
+				<td><input type="text" id="candyDesc"></td>
+				<td><input type="number" id="candyPrice"></td>
+				<td><input type="number" id="candyQty"></td>
+				<td><button onclick="addCandy()">Add Item</button></td>
+			</tr>
+		</tbody>
+	</table>
+
+
+
+
+
+<script>
+// Array to hold candy objects
+// Array to hold candy objects
+let candies = [];
+
+// Function to add a new candy item
+function addCandy() {
+	// Get input values
+	const name = document.getElementById("candyName").value;
+	const desc = document.getElementById("candyDesc").value;
+	const price = document.getElementById("candyPrice").value;
+	const qty = document.getElementById("candyQty").value;
+
+	// Create new candy object and add to array
+	const candy = {name, desc, price, qty};
+	candies.push(candy);
+
+	// Clear input fields and show table
+	clearInputFields();
+	showCandies();
+
+	// Make POST request to save new candy item
+	axios.post("https://crudcrud.com/api/cc8c36233ed14e4a8fbba8e0ae24e4c6/candy", candy)
+		.then(response => console.log(response))
+		.catch(error => console.log(error));
+}
+
+// Function to show the candy table
+function showCandies() {
+	// Get table element
+	const table = document.getElementById("candyTable");
+
+	// Clear table body
+	table.tBodies[0].innerHTML = "";
+
+	// Add table rows for each candy item
+	candies.forEach((candy, index) => {
+		const row = table.tBodies[0].insertRow(-1);
+		row.insertCell(0).textContent = candy.name;
+		row.insertCell(1).textContent = candy.desc;
+		row.insertCell(2).textContent = candy.price;
+		row.insertCell(3).textContent = candy.qty;
+		row.insertCell(4).innerHTML = `<button onclick="buyCandy(${index}, 1)">Buy 1</button>`;
+		row.insertCell(5).innerHTML = `<button onclick="buyCandy(${index}, 2)">Buy 2</button>`;
+	
+		row.insertCell(6).innerHTML = `<button onclick="buyCandy(${index}, 3)">Buy 3</button>`;
+		row.insertCell(7).innerHTML = `<button onclick="deleteCandy(${index})">Delete</button>`;
+		row.insertCell(8).innerHTML = `<button onclick="editCandy(${index})">Edit</button>`;
+	});
+}
+
+// Function to clear input fields
+function clearInputFields() {
+	document.getElementById("candyName").value = "";
+	document.getElementById("candyDesc").value = "";
+	document.getElementById("candyPrice").value = "";
+	document.getElementById("candyQty").value = "";
+}
+
+// Function to buy candy item
+function buyCandy(index, qty) {
+	// Update candy quantity
+	candies[index].qty -= qty;
+
+	// Show updated candy table
+	showCandies();
+
+	// Make DELETE request to update candy quantity
+	axios.delete(`https://crudcrud.com/api/cc8c36233ed14e4a8fbba8e0ae24e4c6/candy/${index}?qty=${qty}`)
+		.then(response => console.log(response))
+		.catch(error => console.log(error));
+}
+
+// Function to delete candy item
+function deleteCandy(index) {
+	// Remove candy object from array
+	candies.splice(index, 1);
+
+	// Show updated candy table
+	showCandies();
+
+	// Make DELETE request to delete candy item
+	axios.delete(`https://crudcrud.com/api/cc8c36233ed14e4a8fbba8e0ae24e4c6/candy/${index}`)
+		.then(response => console.log(response))
+		.catch(error => console.log(error));
+}
+
+// Function to edit candy item
+function editCandy(index) {
+	// Get candy object from array
+	const candy = candies[index];
+
+	// Set input values to candy values
+	document.getElementById("candyName").value = candy.name;
+	document.getElementById("candyDesc").value = candy.desc;
+	document.getElementById("candyPrice").value = candy.price;
+	document.getElementById("candyQty").value = candy.qty;
+
+	// Remove candy object from array
+	candies.splice(index, 1);
+
+	// Show updated candy table
+	showCandies();
+
+	// Make DELETE request to delete candy item
+	axios.delete(`https://crudcrud.com/api/cc8c36233ed14e4a8fbba8e0ae24e4c6/candy/${index}`)
+		.then(response => console.log(response))
+		.catch(error => console.log(error));
+}
+</script>
+</body>
+</html>
